@@ -12,17 +12,9 @@ class User:
         return json.dumps(self, default=lambda o: o.__dict__, 
             sort_keys=True, indent=4)
 
-
-
-# class UserEncoder(JSONEncoder):
-#     def default(self, object):
-#         if isinstance(object, User):
-#             return object.__dict__
-
-#         else:
-
-#             # call base class implementation which takes care of
-
-#             # raising exceptions for unsupported types
-
-#             return json.JSONEncoder.default(self, object)
+    @staticmethod
+    def from_json(json_dct):
+      return User(json_dct['name'],
+                    json_dct['email'],
+                    json_dct['age'],
+                    json_dct['password'])

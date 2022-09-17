@@ -1,19 +1,23 @@
+from flask import request
 from flask_restful import Resource
 from ..models.user import User
-
-userData = [
-    User("Saurav", "saurav@gmail.com", 33, "saurav@123").__dict__,
-    User("JP", "jp@gmail.com", 26, "jp@123").__dict__,
-    User("DJ", "dj@gmail.com", 42, "dj@123").__dict__
-    ]
+from ..database import get_db_connection, close_db_connection, commit_and_close_db_connection
+from ..database import user_db
 
 class UsersApi(Resource):
 
 	def get(self):
-		return userData
+		conn = get_db_connection()
+		users = user_db.get_users(conn)
+		close_db_connection(conn)
+		return users
 
 	def post(self):
-		return {'message': 'Hello POST'}, 201
+		conn = get_db_connection()
+		user_db.create_users(conn, User.from_json(request.json))
+		users = user_db.get_users(conn)
+		commit_and_close_db_connection(conn)
+		return users, 201
 
 	def put(self):
 		return {'message': 'Hello PUT'}
