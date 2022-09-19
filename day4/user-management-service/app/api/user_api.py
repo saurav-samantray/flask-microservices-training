@@ -3,7 +3,6 @@ from flask_restful import Resource
 from ..models.user import User
 from ..database import get_db_connection, close_db_connection, commit_and_close_db_connection
 from ..database import user_db
-from app import api
 from app.exceptions import UserNotFoundException
 
 class UserApi(Resource):
@@ -16,7 +15,6 @@ class UserApi(Resource):
 
 	def put(self, id):
 		conn = get_db_connection()
-		user_db.get_user_details(conn, id) #validate is user exists befire udpate
 		user_db.update_user_details(conn, id, User.from_json(request.json))
 		users = user_db.get_user_details(conn, id)
 		commit_and_close_db_connection(conn)
