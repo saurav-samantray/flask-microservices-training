@@ -1,7 +1,6 @@
 from app import app, api
 from app.api.users_api import UsersApi
 from app.api.user_api import UserApi
-from app.api.user_api import UserApi
 from app.api.auth_api import AuthApi, ProtectedApi
 
 if __name__ == '__main__':
