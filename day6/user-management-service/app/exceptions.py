@@ -17,3 +17,17 @@ class UserNotFoundException(HTTPException):
         self.message = message
         self.code = code
         super().__init__()
+
+
+
+class InvalidAddressPayload(HTTPException):
+    def __init__(self, message="Address payload has invalid input", code=400):
+        self.message = message
+        self.code = code
+        super().__init__()
+
+class AddressNotFoundException(HTTPException):
+    def __init__(self, message="Address not found in the DB", code=400):
+        self.message = message
+        self.code = code
+        super().__init__()   
