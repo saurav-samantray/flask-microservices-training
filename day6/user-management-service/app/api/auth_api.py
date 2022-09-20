@@ -10,7 +10,7 @@ from ..database import get_db_connection, close_db_connection, commit_and_close_
 from ..database import user_db
 from ..database.user_db import get_user_details_from_email
 from ..schemas.user_schema import UserSchema
-from ..exceptions import InvalidUserPayload
+from ..exceptions import InvalidUserPayload, UserExistsException, UserNotFoundException
 from app import flask_bcrypt
 user_schema = UserSchema()
 
@@ -22,26 +22,35 @@ class AuthApi(Resource):
 		password = request.json.get("password", None)
 		conn = get_db_connection()
 		user = get_user_details_from_email(conn, email)
+		if user is None:
+			raise UserNotFoundException(f"User with email [{email}] not found in DB", 400)
 		if email != user.email or not flask_bcrypt.check_password_hash(user.password, password):
 			return {"msg": "Bad email or password"}, 401
 
 		access_token = create_access_token(identity=email)
 		return {"access_token":access_token}
 
-# Protect a route with jwt_required, which will kick out requests
-# without a valid JWT present.
+# User Registration API
+# Ability of create your profile with email, password and other relevent fields
 class RegisterApi(Resource):
 	def post(self):
+		#Payload Validation
 		errors = user_schema.validate(request.json)
 		print("errors: "+str(errors))
 		if errors:
 			raise InvalidUserPayload(errors, 400)
+		#Validating duplicate user
+		conn = get_db_connection()
+		email = request.json.get("email", None)
+		existing_user = get_user_details_from_email(conn, email)
+		if existing_user is not None:
+			raise UserExistsException(f"User with email [{email}] already exists in DB")
+
 		user = User.from_json(request.json)
 		user.password = flask_bcrypt.generate_password_hash(user.password).decode('utf-8')
 		#user_dict['password'] = flask_bcrypt.generate_password_hash(user_dict['password'])
-		conn = get_db_connection()
+		
 		user_db.create_users(conn, user)
-		users = user_db.get_users(conn)
 		commit_and_close_db_connection(conn)
-		return users, 201
+		return user, 201
 		

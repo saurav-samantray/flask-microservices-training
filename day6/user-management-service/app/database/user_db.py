@@ -17,8 +17,6 @@ def get_user_details(conn, id):
 
 def get_user_details_from_email(conn, email):
 	result = conn.execute('SELECT id, name, email, age, created, password FROM user where email = ?', (email,)).fetchone()
-	if result is None:
-		raise UserNotFoundException(f"User with ID [{id}] not found in database", 404)
 	return User.from_json(dict(result)) if result != None else None	
 
 def update_user_details(conn, id, user):
