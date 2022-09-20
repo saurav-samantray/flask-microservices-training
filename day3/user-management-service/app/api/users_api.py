@@ -21,9 +21,8 @@ class UsersApi(Resource):
 		print("errors: "+str(errors))
 		if errors:
 			raise InvalidUserPayload(errors, 400)
-		user_dict = user_schema.load(request.get_json())
 		conn = get_db_connection()
-		user_db.create_users(conn, User(**user_dict))
+		user_db.create_users(conn, User.from_json(request.json))
 		users = user_db.get_users(conn)
 		commit_and_close_db_connection(conn)
 		return users, 201
