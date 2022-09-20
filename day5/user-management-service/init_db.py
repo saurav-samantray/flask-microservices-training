@@ -1,6 +1,6 @@
 import sqlite3
 
-connection = sqlite3.connect('user-management.db')
+connection = sqlite3.connect('user-management-dev.db')
 
 
 with open('schema.sql') as f:
