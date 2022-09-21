@@ -2,6 +2,7 @@ import os
 import datetime
 
 _deployed_env_ = os.environ.get("FLASK_ENV", default=None)
+print(f"Environment: [{_deployed_env_}]")
 
 
 class Config(object):

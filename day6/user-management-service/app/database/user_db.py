@@ -23,4 +23,7 @@ def update_user_details(conn, id, user):
 	conn.execute('UPDATE user SET name = ?, email = ?, age = ?, password = ? where id = ?', (user.name, user.email, user.age, user.password, str(id)))
 
 def delete_user(conn, id):
-	conn.execute('DELETE from user where id = ?', (str(id)))        
+	conn.execute('DELETE from user where id = ?', (str(id)))
+
+def delete_all_users(conn):
+	conn.execute('DELETE from user')	

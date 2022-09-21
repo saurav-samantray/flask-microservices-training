@@ -5,6 +5,7 @@ from ..database import address_db
 from ..schemas.address_schema import AddressSchema
 from ..exceptions import InvalidAddressPayload
 from ..models.address import Address
+from app import restful_api
 
 address_schema = AddressSchema()
 
@@ -33,3 +34,5 @@ class AddressesApi(Resource):
 
 	def delete(self):
 		return {'message': 'Hello DELETE'}
+
+restful_api.add_resource(AddressesApi, '/api/addresses')		

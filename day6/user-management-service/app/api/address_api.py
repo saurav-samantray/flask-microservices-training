@@ -5,6 +5,7 @@ from ..database import address_db
 from ..schemas.address_schema import AddressSchema
 from ..exceptions import InvalidAddressPayload
 from ..models.address import Address
+from app import restful_api
 
 address_schema = AddressSchema()
 
@@ -30,3 +31,5 @@ class AddressApi(Resource):
 		address_db.delete_address(conn, id)
 		commit_and_close_db_connection(conn)
 		return {'message': f'Address [{address["id"]}] deleted from the database'}
+
+restful_api.add_resource(AddressApi, '/api/addresses/<int:id>')

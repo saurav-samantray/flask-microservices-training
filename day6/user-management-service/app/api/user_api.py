@@ -4,7 +4,7 @@ from flask_jwt_extended import jwt_required
 from ..models.user import User
 from ..database import get_db_connection, close_db_connection, commit_and_close_db_connection
 from ..database import user_db
-from app import api
+from app import restful_api
 from app.exceptions import UserNotFoundException
 
 class UserApi(Resource):
@@ -29,3 +29,5 @@ class UserApi(Resource):
 		user_db.delete_user(conn, id)
 		commit_and_close_db_connection(conn)
 		return {'message': f'User [{user["name"]}] deleted from the database'}
+
+restful_api.add_resource(UserApi, '/api/users/<int:id>')

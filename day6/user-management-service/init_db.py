@@ -1,10 +1,13 @@
 import sqlite3
 
-connection = sqlite3.connect('user-management-dev.db')
 
+def initialize(db_name):
+    connection = sqlite3.connect(db_name)
+    with open('schema.sql') as f:
+        connection.executescript(f.read())
 
-with open('schema.sql') as f:
-    connection.executescript(f.read())
+    connection.commit()
+    connection.close()
 
-connection.commit()
-connection.close()
+if __name__ == '__main__':
+    initialize('user-management-dev.db')

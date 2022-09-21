@@ -10,7 +10,7 @@ load_configuration(app)
 class CustomApi(Api):
     def handle_error(self, e):
         return {'code': e.code, 'message': 'error', 'errors': e.message}, e.code
-api = CustomApi(app)
+restful_api = CustomApi(app)
 
 flask_bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
