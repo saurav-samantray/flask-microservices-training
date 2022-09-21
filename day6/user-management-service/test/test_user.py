@@ -33,15 +33,31 @@ class UserTest(unittest.TestCase):
         response = self.client.get(USERS_URL, headers = {"Authorization": f"Bearer {self.access_token}"})
         self.assertEqual(response.status_code, 200)
 
-    def test_create_todos_success(self):
+    def test_create_user_success(self):
         response = self.client.post(USERS_URL, json = {"name": "new user", "email": "new@user.com", "age": 23, "password": "test"}, headers = {"Authorization": f"Bearer {self.access_token}"})
         print(f"API Response: {response.json}")
         self.assertEqual(response.status_code, 201)
         self.assertEqual(len(response.json), 2)
 
-    def test_create_todos_error(self):
+    def test_create_user_error(self):
         response = self.client.post(USERS_URL, json = {"name": "new user", "email": "test@user.com", "age": 23, "password": "test"}, headers = {"Authorization": f"Bearer {self.access_token}"})
         self.assertEqual(response.status_code, 400)
+
+    def test_get_user_detail(self):
+        response = self.client.get(USERS_URL+"/1", headers = {"Authorization": f"Bearer {self.access_token}"})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json.get("email"), "test@user.com")
+
+    def test_update_user_detail(self):
+        response = self.client.put(USERS_URL+"/1", json= {"name": "test user", "email": "test2@user.com", "age": 33, "password": "test"}, headers = {"Authorization": f"Bearer {self.access_token}"})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json.get("email"), "test2@user.com")
+
+    def test_delete_user_detail(self):
+        delete_response = self.client.delete(USERS_URL+"/1", headers = {"Authorization": f"Bearer {self.access_token}"})
+        self.assertEqual(delete_response.status_code, 200)
+        get_response = self.client.get(USERS_URL, headers = {"Authorization": f"Bearer {self.access_token}"})
+        self.assertEqual(len(get_response.json), 0)    
 
 if __name__ == "__main__":
     unittest.main() 

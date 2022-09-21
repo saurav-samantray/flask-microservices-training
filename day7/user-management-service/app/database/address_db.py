@@ -13,3 +13,9 @@ def get_address_details(conn, id):
 	if result is None:
 		raise AddressNotFoundException(f"Address with ID [{id}] not found in database", 404)
 	return dict(result) if result != None else None
+
+def update_address_details(conn, id, address):
+	conn.execute('UPDATE address SET address_line_1 = ?, city = ?, state = ?, pin = ? where id = ?', (address.address_line_1, address.city, address.state, address.pin, str(id)))
+
+def delete_address(conn, id):
+	conn.execute('DELETE from address where id = ?', (str(id)))       

@@ -11,7 +11,7 @@ from ..database import user_db
 from ..database.user_db import get_user_details_from_email
 from ..schemas.user_schema import UserSchema
 from ..exceptions import InvalidUserPayload, UserExistsException, UserNotFoundException
-from app import flask_bcrypt
+from app import flask_bcrypt, restful_api
 user_schema = UserSchema()
 
 # Create a route to authenticate your users and return JWTs. The
@@ -31,6 +31,7 @@ class AuthApi(Resource):
 		refresh_token = create_refresh_token(identity=email)
 		return {"access_token":access_token, "refresh_token": refresh_token}
 
+
 # We are using the `refresh=True` options in jwt_required to only allow
 # refresh tokens to access this route.
 class RefreshTokenApi(Resource):
@@ -38,7 +39,7 @@ class RefreshTokenApi(Resource):
 	def post(self):
 		identity = get_jwt_identity()
 		access_token = create_access_token(identity=identity)
-		return {"access_token":access_token}		
+		return {"access_token":access_token}
 
 # User Registration API
 # Ability of create your profile with email, password and other relevent fields
@@ -55,12 +56,13 @@ class RegisterApi(Resource):
 		existing_user = get_user_details_from_email(conn, email)
 		if existing_user is not None:
 			raise UserExistsException(f"User with email [{email}] already exists in DB")
-
 		user = User.from_json(request.json)
 		user.password = flask_bcrypt.generate_password_hash(user.password).decode('utf-8')
-		#user_dict['password'] = flask_bcrypt.generate_password_hash(user_dict['password'])
 		
 		user_db.create_users(conn, user)
 		commit_and_close_db_connection(conn)
-		return user, 201
+		return user.to_json(), 201
+
+restful_api.add_resource(AuthApi, '/api/auth')
+restful_api.add_resource(RegisterApi, '/api/register')
 		

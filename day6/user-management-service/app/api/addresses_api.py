@@ -25,7 +25,7 @@ class AddressesApi(Resource):
 		#user_dict['password'] = flask_bcrypt.generate_password_hash(user_dict['password'])
 		conn = get_db_connection()
 		address_db.create_address(conn, Address.from_json(request.json))
-		addresses = address_db.get_addressesa(conn)
+		addresses = address_db.get_addresses(conn)
 		commit_and_close_db_connection(conn)
 		return addresses, 201
 

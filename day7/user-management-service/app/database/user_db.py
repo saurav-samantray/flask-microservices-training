@@ -13,14 +13,17 @@ def get_user_details(conn, id):
 	result = conn.execute('SELECT id, name, email, age, created FROM user where id = ?', (str(id),)).fetchone()
 	if result is None:
 		raise UserNotFoundException(f"User with ID [{id}] not found in database", 404)
-	return User.from_json(dict(result)) if result != None else None
+	return dict(result)
 
 def get_user_details_from_email(conn, email):
-	result = conn.execute('SELECT id, name, email, age, created, password FROM user where email = ?', (email,)).fetchone()
+	result = conn.execute('SELECT id, name, email, age, password, created FROM user where email = ?', (email,)).fetchone()
 	return User.from_json(dict(result)) if result != None else None	
 
 def update_user_details(conn, id, user):
 	conn.execute('UPDATE user SET name = ?, email = ?, age = ?, password = ? where id = ?', (user.name, user.email, user.age, user.password, str(id)))
 
 def delete_user(conn, id):
-	conn.execute('DELETE from user where id = ?', (str(id)))        
+	conn.execute('DELETE from user where id = ?', (str(id)))
+
+def delete_all_users(conn):
+	conn.execute('DELETE from user')	
