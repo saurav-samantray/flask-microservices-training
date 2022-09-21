@@ -48,7 +48,6 @@ class RegisterApi(Resource):
 
 		user = User.from_json(request.json)
 		user.password = flask_bcrypt.generate_password_hash(user.password).decode('utf-8')
-		#user_dict['password'] = flask_bcrypt.generate_password_hash(user_dict['password'])
 		
 		user_db.create_users(conn, user)
 		commit_and_close_db_connection(conn)
