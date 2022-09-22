@@ -23,7 +23,8 @@ class UserTest(unittest.TestCase):
         self.app.config['DATABASE_URI'] = DB_NAME
         self.client = self.app.test_client()
         #Create a test user who's credential will be used for authentication
-        self.client.post(REGISTRATION_URL, json = {"name": "test user", "email": "test@user.com", "age": 33, "password": "test"})
+        registration_respone = self.client.post(REGISTRATION_URL, json = {"name": "test user", "email": "test@user.com", "age": 33, "password": "test"})
+        print(f"Registration Response: {registration_respone.json}")
         #Generate auth token and save in a class level property
         auth_response = self.client.post(AUTH_URL, json={"email": "test@user.com", "password": "test"})
         self.access_token = auth_response.json['access_token']

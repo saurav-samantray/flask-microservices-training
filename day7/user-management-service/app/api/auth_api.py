@@ -65,4 +65,5 @@ class RegisterApi(Resource):
 
 restful_api.add_resource(AuthApi, '/api/auth')
 restful_api.add_resource(RegisterApi, '/api/register')
+restful_api.add_resource(RefreshTokenApi, '/api/refresh')
 		

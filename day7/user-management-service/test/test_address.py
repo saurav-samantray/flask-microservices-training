@@ -10,7 +10,7 @@ ADDRESSES_URL = '/api/addresses'
 
 DB_NAME = 'user-management-UT.db';
 
-class UserTest(unittest.TestCase):
+class AddressTest(unittest.TestCase):
     def setUp(self):
         #Initializing Table Schema
         init_db.initialize(DB_NAME)
