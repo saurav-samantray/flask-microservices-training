@@ -1,5 +1,6 @@
 from flask import request
 from flask_restful import Resource
+from flask_jws_extended import jwt_required
 from ..database import get_db_connection, close_db_connection, commit_and_close_db_connection
 from ..database import address_db
 from ..schemas.address_schema import AddressSchema
@@ -10,7 +11,7 @@ from app import restful_api
 address_schema = AddressSchema()
 
 class AddressesApi(Resource):
-
+	decorators = [jwt_required()]
 	def get(self):
 		conn = get_db_connection()
 		addresses = address_db.get_addresses(conn)
