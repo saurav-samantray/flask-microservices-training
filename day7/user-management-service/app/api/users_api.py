@@ -27,7 +27,7 @@ class UsersApi(Resource):
 		existing_user = user_db.get_user_details_from_email(conn, request.json.get('email'))
 		if(existing_user is not None):
 			raise UserExistsException(f"User [{request.json.get('email')}] already exists")
-		user_db.create_users(conn, User.from_json(request.json))
+		user_db.create_user(conn, User.from_json(request.json))
 		users = user_db.get_users(conn)
 		commit_and_close_db_connection(conn)
 		return users, 201

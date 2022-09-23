@@ -12,21 +12,20 @@ address_schema = AddressSchema()
 
 class AddressesApi(Resource):
 	decorators = [jwt_required()]
-	def get(self):
+	def get(self, user_id):
 		conn = get_db_connection()
-		addresses = address_db.get_addresses(conn)
+		addresses = address_db.get_addresses(conn, user_id)
 		close_db_connection(conn)
 		return addresses
 
-	def post(self):
+	def post(self, user_id):
 		errors = address_schema.validate(request.json)
 		print("errors: "+str(errors))
 		if errors:
 			raise InvalidAddressPayload(errors, 400)
-		#user_dict['password'] = flask_bcrypt.generate_password_hash(user_dict['password'])
 		conn = get_db_connection()
-		address_db.create_address(conn, Address.from_json(request.json))
-		addresses = address_db.get_addresses(conn)
+		address_db.create_address(conn, Address.from_json(request.json), user_id)
+		addresses = address_db.get_addresses(conn, user_id)
 		commit_and_close_db_connection(conn)
 		return addresses, 201
 
@@ -36,4 +35,4 @@ class AddressesApi(Resource):
 	def delete(self):
 		return {'message': 'Hello DELETE'}
 
-restful_api.add_resource(AddressesApi, '/api/addresses')		
+restful_api.add_resource(AddressesApi, '/api/users/<int:user_id>/addresses')		

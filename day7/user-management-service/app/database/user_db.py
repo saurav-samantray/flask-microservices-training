@@ -6,8 +6,9 @@ def get_users(conn):
 	results = [dict(row) for row in results]
 	return results
 
-def create_users(conn, user):
+def create_user(conn, user):
 	conn.execute('INSERT INTO user(name, email, age, password) VALUES (?, ?, ?, ?)',(user.name, user.email, user.age, user.password))
+	return get_user_details_from_email(conn, user.email)
 
 def get_user_details(conn, id):
 	result = conn.execute('SELECT id, name, email, age, created FROM user where id = ?', (str(id),)).fetchone()

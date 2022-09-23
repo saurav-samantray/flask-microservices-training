@@ -59,9 +59,9 @@ class RegisterApi(Resource):
 		user = User.from_json(request.json)
 		user.password = flask_bcrypt.generate_password_hash(user.password).decode('utf-8')
 		
-		user_db.create_users(conn, user)
+		new_user = user_db.create_user(conn, user)
 		commit_and_close_db_connection(conn)
-		return user.to_json(), 201
+		return new_user.to_json(), 201
 
 restful_api.add_resource(AuthApi, '/api/auth')
 restful_api.add_resource(RegisterApi, '/api/register')
