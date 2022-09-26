@@ -55,18 +55,21 @@ class RefreshTokenApi(Resource):
 # Ability of create your profile with email, password and other relevent fields
 class RegisterApi(Resource):
 	def post(self):
+		user_payload = request.json
+		#avoid letting users assign role for themself
+		user_payload['role'] = 'USER'
 		#Payload Validation
-		errors = user_schema.validate(request.json)
+		errors = user_schema.validate(user_payload)
 		print("errors: "+str(errors))
 		if errors:
 			raise InvalidUserPayload(errors, 400)
 		#Validating duplicate user
 		conn = get_db_connection()
-		email = request.json.get("email", None)
+		email = user_payload.get("email", None)
 		existing_user = get_user_details_from_email(conn, email)
 		if existing_user is not None:
 			raise UserExistsException(f"User with email [{email}] already exists in DB")
-		user = User.from_json(request.json)
+		user = User.from_json(user_payload)
 		user.password = flask_bcrypt.generate_password_hash(user.password).decode('utf-8')
 		
 		new_user = user_db.create_user(conn, user)
