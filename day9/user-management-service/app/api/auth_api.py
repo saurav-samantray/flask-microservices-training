@@ -11,13 +11,18 @@ from ..database import user_db
 from ..database.user_db import get_user_details_from_email
 from ..schemas.user_schema import UserSchema
 from ..exceptions import InvalidUserPayload, UserExistsException, UserNotFoundException
-from app import flask_bcrypt, restful_api
+from app import flask_bcrypt, restful_api, app
 user_schema = UserSchema()
 
 # Create a route to authenticate your users and return JWTs. The
 # create_access_token() function is used to actually generate the JWT.
 class AuthApi(Resource):
 	def post(self):
+		app.logger.debug("Debug log level")
+		app.logger.info("Program running correctly")
+		app.logger.warning("Warning; low disk space!")
+		app.logger.error("Error!")
+		app.logger.critical("Program halt!")
 		email = request.json.get("email", None)
 		password = request.json.get("password", None)
 		conn = get_db_connection()
@@ -76,7 +81,19 @@ class RegisterApi(Resource):
 		commit_and_close_db_connection(conn)
 		return new_user.to_json(), 201
 
+# We are using the `refresh=True` options in jwt_required to only allow
+# refresh tokens to access this route.
+class PartiallyProtectedApi(Resource):
+	decorators = [jwt_required(optional=True)]
+	def get(self):
+		identity_email = get_jwt_identity()
+		if identity_email:
+			return {'message': f'hello {identity_email}'}
+		return {'message': 'Hello Anonymous'}
+
+
 restful_api.add_resource(AuthApi, '/api/auth')
 restful_api.add_resource(RegisterApi, '/api/register')
 restful_api.add_resource(RefreshTokenApi, '/api/refresh')
+restful_api.add_resource(PartiallyProtectedApi, '/api/partially-protected')
 		
