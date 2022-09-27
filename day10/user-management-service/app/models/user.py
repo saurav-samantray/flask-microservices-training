@@ -9,7 +9,7 @@ class User(db.Model):
     age = db.Column(db.Integer)
     password = db.Column(db.String(100))
     role = db.Column(db.String(50))
-    addresses = relationship('Address', cascade='all, delete', backref='UMS_USER', lazy=True)
+    addresses = relationship('Address', cascade='all, delete')
     
     def __init__(self, id, name, email, age, password, role):
         self.id = id
