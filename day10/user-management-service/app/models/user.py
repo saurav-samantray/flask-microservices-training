@@ -1,12 +1,15 @@
 from app import db
+from sqlalchemy.orm import relationship
 
 class User(db.Model):
+    __tablename__ = 'UMS_USER'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
     email = db.Column(db.String(50))
     age = db.Column(db.Integer)
     password = db.Column(db.String(100))
     role = db.Column(db.String(50))
+    addresses = relationship('Address', cascade='all, delete', backref='UMS_USER', lazy=True)
     
     def __init__(self, id, name, email, age, password, role):
         self.id = id
@@ -17,7 +20,14 @@ class User(db.Model):
         self.role = role     
     
     def to_json(self):
-        return self.__dict__
+        return {
+            'id': self.id,
+            'name': self.name,
+            'email': self.email,
+            'age': self.age,
+            'role': self.role,
+            'addresses': [address.to_json() for address in self.addresses]
+        }
 
     @staticmethod
     def from_json(json_dct):

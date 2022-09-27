@@ -12,19 +12,19 @@ class Config(object):
     JWT_REFRESH_TOKEN_EXPIRES = datetime.timedelta(days=1)
     UMS_ADMIN_EMAIL = 'saurav@gmail.com'
     UMS_ADMIN_PASSWORD = 'saurav'
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:postgres@localhost:5432/user-management-db'
 
 class ProductionConfig(Config):
     DATABASE_URI = 'user-management-prod.db'
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///user-management-prod.db'
 
 class DevelopmentConfig(Config):
     DATABASE_URI = 'user-management-dev.db'
-    SQLALCHEMY_DATABASE_URI = "sqlite:///user-management-dev.db"
+    
     DEBUG = True
 
 class TestingConfig(Config):
     DATABASE_URI = 'user-management-test.db'
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///user-management-test.db'
     TESTING = True
 
 def load_configuration(app):

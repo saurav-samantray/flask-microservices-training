@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
 from flask_bcrypt import Bcrypt
@@ -16,3 +17,8 @@ restful_api = CustomApi(app)
 flask_bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
 db = SQLAlchemy(app)  
+migrate = Migrate(app, db)
+
+
+## Imports are essential for python interpreter to find the model files for migration
+from .models import user, address

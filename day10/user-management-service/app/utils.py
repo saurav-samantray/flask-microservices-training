@@ -1,14 +1,11 @@
-from .database import get_db_connection, commit_and_close_db_connection
-from .database.user_db import get_user_details_from_email
-from .database import user_db
+from .models.user import User
 
-def create_admin_user(flask_bcrypt, user):
-		conn = get_db_connection()
-		existing_user = get_user_details_from_email(conn, user.email)
+def create_admin_user(flask_bcrypt, db, user):
+		existing_user = User.query.filter_by(email=user.email).first()
 		if existing_user is not None:
 			print(f"Admin User [{existing_user.email}] already exits. Skipping creation on startup")
 			return
 		user.password = flask_bcrypt.generate_password_hash(user.password).decode('utf-8')
-		user_db.create_user(conn, user)
-		commit_and_close_db_connection(conn)    
+		db.session.add(user)
+		db.session.commit()
 		print(f"Successfully Created admin user [{user.email}]")
