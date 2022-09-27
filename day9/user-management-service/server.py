@@ -1,4 +1,5 @@
 from app import app, restful_api
+from app.api.users__search_api import UsersSearchApi
 from app.api.users_api import UsersApi
 from app.api.user_api import UserApi
 from app.api.addresses_api import AddressesApi
