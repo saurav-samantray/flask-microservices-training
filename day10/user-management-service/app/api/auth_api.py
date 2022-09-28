@@ -11,7 +11,7 @@ from ..database import user_db
 from ..database.user_db import get_user_details_from_email
 from ..schemas.user_schema import UserSchema
 from ..exceptions import InvalidUserPayload, UserExistsException, UserNotFoundException
-from app import flask_bcrypt, restful_api
+from app import flask_bcrypt, restful_api, db
 user_schema = UserSchema()
 
 # Create a route to authenticate your users and return JWTs. The
@@ -20,8 +20,7 @@ class AuthApi(Resource):
 	def post(self):
 		email = request.json.get("email", None)
 		password = request.json.get("password", None)
-		conn = get_db_connection()
-		user = get_user_details_from_email(conn, email)
+		user = User.query.filter_by(email=email).first()
 		if user is None:
 			raise UserNotFoundException(f"User with email [{email}] not found in DB", 400)
 		if email != user.email or not flask_bcrypt.check_password_hash(user.password, password):
@@ -42,8 +41,7 @@ class RefreshTokenApi(Resource):
 	decorators = [jwt_required(refresh=True)]
 	def post(self):
 		identity_email = get_jwt_identity()
-		conn = get_db_connection()
-		user = get_user_details_from_email(conn, identity_email)
+		user = User.query.filter_by(email=identity_email).first()
 		if user is None:
 			raise UserNotFoundException(f"User with email [{identity_email}] not found in DB", 400)
 
@@ -64,17 +62,15 @@ class RegisterApi(Resource):
 		if errors:
 			raise InvalidUserPayload(errors, 400)
 		#Validating duplicate user
-		conn = get_db_connection()
-		email = user_payload.get("email", None)
-		existing_user = get_user_details_from_email(conn, email)
-		if existing_user is not None:
-			raise UserExistsException(f"User with email [{email}] already exists in DB")
-		user = User.from_json(user_payload)
+		existing_user = User.query.filter_by(email=request.json.get('email')).first()
+		if(existing_user is not None):
+			raise UserExistsException(f"User [{existing_user.email}] already exists")
+		user = User.from_json(request.json)
 		user.password = flask_bcrypt.generate_password_hash(user.password).decode('utf-8')
-		
-		new_user = user_db.create_user(conn, user)
-		commit_and_close_db_connection(conn)
-		return new_user.to_json(), 201
+		db.session.add(user)
+		db.session.commit()
+		new_user = User.query.filter_by(email=user.email).first()
+		return new_user.to_json()
 
 restful_api.add_resource(AuthApi, '/api/auth')
 restful_api.add_resource(RegisterApi, '/api/register')
