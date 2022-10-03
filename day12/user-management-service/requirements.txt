@@ -1,0 +1,7 @@
+Flask==2.2.0
+Flask-RESTful==0.3.9
+marshmallow==3.18.0
+Flask_JWT_Extended==4.4.4
+Flask_Bcrypt==1.0.1
+Flask-SQLAlchemy==2.5.1
+psycopg2-binary==2.9.3

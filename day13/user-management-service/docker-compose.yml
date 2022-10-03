@@ -1,0 +1,40 @@
+# Author: Saurav Samantray
+# All rights reserved. Copyright (c) COHOTZ PEOPALYTICS LLP
+version: "3.8"
+services:
+  db:
+    image: postgres:14
+    container_name: pgdb
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: user-management-db
+    volumes:
+      - local_pgdata:/var/lib/postgresql/data
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4
+    restart: always
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: saurav@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: saurav
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+  
+  user-management-service:
+    image: user-management-service
+    container_name: user-management-service
+    ports:
+      - "5000:5000"
+    environment:
+      FLASK_ENV: docker
+    depends_on:
+      - db
+volumes:
+  local_pgdata:
+  pgadmin-data:
