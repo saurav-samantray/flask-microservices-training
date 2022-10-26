@@ -1,13 +1,14 @@
-import time
 from datetime import datetime
-import random
 from flask import Flask, request
 from flask_restful import Api, Resource
+from flask_sock import Sock
 from kafka_producer import sender
+from kafka_consumer import listener
 from utils.messageutils import generate_message
 
 app = Flask(__name__)
 restful_api = Api(app)
+sock = Sock(app)
 
 class KafkaApi(Resource):
 	def post(self):
@@ -19,24 +20,17 @@ class KafkaApi(Resource):
 			return {'error': 'No topic name provided'}			
 		print(f'Producing message @ {datetime.now()} | Message = {str(payload)}')
 		sender.send(topic_name, payload)
-		return {'success': 'message successfully produced to kafka topic'}
-
+		return {'success': 'message successfully produced to kafka topic'}		
 
 restful_api.add_resource(KafkaApi, '/api/kafka')
 
-if __name__ == '__main__':
-	app.run()
 
-# if __name__ == '__main__':
-# 	# Infinite loop - runs until you kill the program
-# 	while True:
-# 		# Generate a message
-# 		dummy_message = generate_message()
-		
-# 		# Send it to our 'messages' topic
-# 		print(f'Producing message @ {datetime.now()} | Message = {str(dummy_message)}')
-# 		sender.send(dummy_message)
-		
-# 		# Sleep for a random number of seconds
-# 		time_to_sleep = random.randint(1, 11)
-# 		time.sleep(time_to_sleep)
+@sock.route('/kafka')
+def kafka_consumer(ws):
+	topic_name = request.args.get('topic_name')
+	while True:
+		listener.read(ws, topic_name)
+
+if __name__ == '__main__':
+	sock.init_app(app)
+	app.run(debug=True)

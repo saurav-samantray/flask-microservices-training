@@ -14,4 +14,4 @@ producer = KafkaProducer(
 
 def send(topic_name, message):
         # Send it to our 'messages' topic
-        producer.send(topic_name, message)
+        producer.send(topic_name, message, partition=0)
