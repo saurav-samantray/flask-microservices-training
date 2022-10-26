@@ -1,0 +1,4 @@
+Flask==2.2.0
+Flask-RESTful==0.3.9
+kafka-python==2.0.2
+randominfo==2.0.2
