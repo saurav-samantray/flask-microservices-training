@@ -19,7 +19,7 @@ db = SQLAlchemy(app)
 
 @app.route("/")
 def index():
-    return "Hello From User Management Service! Please use the REST APIs to test the application"
+    return "Hello From User Management Service! Saurav Samantray"
 
 
 ## Imports are essential for python interpreter to find the model files for migration
